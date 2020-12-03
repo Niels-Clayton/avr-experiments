@@ -1,5 +1,5 @@
 # Target name for final intel hex file
-TARGET = $ TARGET NAME $
+TARGET = blink
 
 # Directory Structure
 SOURCEDIR = .
@@ -19,17 +19,21 @@ HEX = $(BUILDDIR)/$(TARGET).hex
 
 .PHONY: all flash clean
 
-all:$(OBJECTS)
+compile:$(OBJECTS)
 	avr-gcc -Wall -Os -mmcu=$(DEVICE) $(OBJECTS) -o $(ELF)
 	avr-objcopy -j .text -j .data -O ihex $(ELF) $(HEX)
 	avr-size --format=avr --mcu=$(DEVICE) $(ELF)
 
 
-$(BUILDDIR)/%.o: $(SOURCEDIR)/%.c
-	avr-gcc -Wall -Os -mmcu=$(DEVICE) -c $< -o $@
+$(BUILDDIR)/%.o: $(SOURCEDIR)/%.c | $(BUILDDIR)
+	avr-gcc -Wall -Os -mmcu=$(DEVICE) -c $< -o $@	
 
 
-flash:
+$(BUILDDIR):
+	mkdir -p $@
+
+
+flash: $(HEX)
 	avrdude -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -p m328p -U flash:w:$(HEX)
 
 
@@ -39,6 +43,6 @@ clean:
 
 help:
 	@echo "Targets:"
-	@echo "all	- Build and compile sources to intel hex"
+	@echo "compile	- Build and compile sources to intel hex"
 	@echo "flash	- Flash intel hex to AVR microcontroller"
 	@echo "clean	- Remove all build outputs"
