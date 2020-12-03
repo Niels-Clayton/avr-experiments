@@ -1,0 +1,27 @@
+.idea/
+.vscode/
+
+## LaTeX
+# Core latex/pdflatex auxiliary files:
+*.aux
+*.lo[gft]
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+*.dvi
+*.fdb_latexmk
+_minted*
+*.pyg
+*.synctex.gz
+*.blg
+*.bbl
+*.bak
+*.sav
+.texpadtmp
+*.backup
+*~[0-9]*
+*/auto/*
