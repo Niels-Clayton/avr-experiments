@@ -5,8 +5,11 @@ TARGET = blink
 SOURCEDIR = .
 BUILDDIR  = build
 
-# Programmer definition
+# Compiler definitions
 DEVICE = atmega328p
+
+# Programmer definitions
+DEVICE_ID = m328p
 PORT = /dev/ttyACM0
 PROGRAMMER = avrisp
 BAUDRATE = 19200
@@ -17,8 +20,7 @@ OBJECTS = $(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
 ELF = $(BUILDDIR)/$(TARGET).elf
 HEX = $(BUILDDIR)/$(TARGET).hex
 
-.PHONY: all flash clean
-
+# Compile all sources to an intel hex file
 compile:$(OBJECTS)
 	avr-gcc -Wall -Os -mmcu=$(DEVICE) $(OBJECTS) -o $(ELF)
 	avr-objcopy -j .text -j .data -O ihex $(ELF) $(HEX)
@@ -32,17 +34,23 @@ $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c | $(BUILDDIR)
 $(BUILDDIR):
 	mkdir -p $@
 
-
+# Flash the intel hex file to the specified avr microcontroller
 flash: $(HEX)
-	avrdude -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -p m328p -U flash:w:$(HEX)
+	avrdude -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -p $(DEVICE_ID) -U flash:w:$(HEX)
 
 
 clean:
 	rm -f $(OBJECTS) $(ELF) $(HEX)
 
 
+all: compile flash clean
+
+.PHONY: all compile flash clean help
+
+
 help:
 	@echo "Targets:"
+	@echo "all	- Run all targets"
 	@echo "compile	- Build and compile sources to intel hex"
 	@echo "flash	- Flash intel hex to AVR microcontroller"
 	@echo "clean	- Remove all build outputs"
