@@ -20,6 +20,7 @@ OBJECTS = $(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
 ELF = $(BUILDDIR)/$(TARGET).elf
 HEX = $(BUILDDIR)/$(TARGET).hex
 
+
 # Compile all sources to an intel hex file
 compile:$(OBJECTS)
 	avr-gcc -Wall -Os -mmcu=$(DEVICE) $(OBJECTS) -o $(ELF)
@@ -34,15 +35,18 @@ $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c | $(BUILDDIR)
 $(BUILDDIR):
 	mkdir -p $@
 
+
 # Flash the intel hex file to the specified avr microcontroller
 flash: $(HEX)
 	avrdude -c $(PROGRAMMER) -P $(PORT) -b $(BAUDRATE) -p $(DEVICE_ID) -U flash:w:$(HEX)
 
 
+# Remove build outputs
 clean:
 	rm -f $(OBJECTS) $(ELF) $(HEX)
 
 
+# Compile sources, flash to device, clean outputs
 all: compile flash clean
 
 .PHONY: all compile flash clean help
