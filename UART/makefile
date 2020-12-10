@@ -22,7 +22,7 @@ HEX = $(BUILDDIR)/$(TARGET).hex
 
 
 # Compile all sources to an intel hex file
-compile:$(OBJECTS)
+compile: clean $(OBJECTS) 
 	avr-gcc -Wall -Os -mmcu=$(DEVICE) $(OBJECTS) -o $(ELF)
 	avr-objcopy -j .text -j .data -O ihex $(ELF) $(HEX)
 	avr-size --format=avr --mcu=$(DEVICE) $(ELF)
