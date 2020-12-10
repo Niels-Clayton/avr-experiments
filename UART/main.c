@@ -8,9 +8,12 @@
 int main() {
 
     UART_init(9600, F_CPU);
+    char message;
 
     while(1) {
-        UART_transmit("hello world\n", 12);
-        // _delay_ms(10);
+        while(UART_available()) {
+            message = UART_recieve();
+            UART_transmit(&message, 1);
+        }
     }
 }

@@ -3,13 +3,13 @@
 
 
 char TX_buffer[BUFFER_LENGTH];
-// extern static char RX_buffer[BUFFER_LENGTH];
+char RX_buffer[BUFFER_LENGTH];
 
 uint8_t TX_send_position = 0;
-// extern static uint8_t RX_recieve_position = 0;
+uint8_t RX_write_position = 0;
 
 uint8_t TX_write_position = 0;
-// extern static uint8_t RX_read_position = 0;
+uint8_t RX_read_position = 0;
 
 
 void UART_init(uint32_t baud, uint32_t f_cpu) {
@@ -21,8 +21,8 @@ void UART_init(uint32_t baud, uint32_t f_cpu) {
     UBRR0H = ubbr >> 8;
     UBRR0L = ubbr;
 
-    // Enable RX and TX and enable TX interrupts
-    UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << TXCIE0); // | (1 << RXCIE0)
+    // Enable RX and TX and enable RX and TX interrupts
+    UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << TXCIE0) | (1 << RXCIE0);
 
     // Set number of data bits
     // This sets UART to 8 bit data
@@ -60,6 +60,31 @@ void UART_transmit(char* data, uint8_t len) {
     }  
 }
 
+char UART_recieve(void) {
+    
+    char data = '\0';
+
+    // If a byte is available place it in the data variable 
+    if(RX_write_position != RX_read_position) {
+        data = *(RX_buffer + RX_read_position++);
+    }
+
+    // Check if send position must be reset
+    if(RX_read_position == BUFFER_LENGTH) {
+        RX_read_position = 0;
+    }
+
+    return data;
+}
+
+
+int UART_available(void) {
+
+    // If there is unread data in the buffer return true
+    return !(RX_write_position == RX_read_position);
+}
+
+// Transmit (TX) interupt rutine 
 ISR(USART_TX_vect) {
 
     // If there is unsent data in the tansmit buffer
@@ -71,5 +96,17 @@ ISR(USART_TX_vect) {
     // Check if send position must be reset
     if(TX_send_position == BUFFER_LENGTH) {
             TX_send_position = 0;
+    }
+}
+
+// Recieve (TX) interupt rutine 
+ISR(USART_RX_vect) {
+
+    // Store they byte of data in the recieve buffer
+    *(RX_buffer + RX_write_position++) = UDR0;
+
+    // Check if send position must be reset
+    if(RX_write_position == BUFFER_LENGTH) {
+        RX_write_position = 0;
     }
 }
