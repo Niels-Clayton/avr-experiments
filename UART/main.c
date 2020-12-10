@@ -7,10 +7,10 @@
 
 int main() {
 
-    init_UART(9600, F_CPU);
+    UART_init(9600, F_CPU);
 
     while(1) {
-        transmit_string("hello world\n\0");
-        _delay_ms(500);
+        UART_transmit("hello world\n", 12);
+        // _delay_ms(10);
     }
 }
