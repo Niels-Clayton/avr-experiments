@@ -1,11 +1,12 @@
 # Target name for final intel hex file
-TARGET = ## Target Name ##
+TARGET = ** Target Name **
 
 # Directory Structure
 SOURCEDIR = .
 BUILDDIR  = build
 
 # Compiler definitions
+CFLAGS = -g -Wall
 DEVICE = atmega328p
 
 # Programmer definitions
@@ -23,13 +24,13 @@ HEX = $(BUILDDIR)/$(TARGET).hex
 
 # Compile all sources to an intel hex file
 compile:$(OBJECTS)
-	avr-gcc -Wall -Os -mmcu=$(DEVICE) $(OBJECTS) -o $(ELF)
+	avr-gcc $(CFLAGS) -mrelax -Os -mmcu=$(DEVICE) $(OBJECTS) -o $(ELF)
 	avr-objcopy -j .text -j .data -O ihex $(ELF) $(HEX)
 	avr-size --format=avr --mcu=$(DEVICE) $(ELF)
 
 
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.c | $(BUILDDIR)
-	avr-gcc -Wall -Os -mmcu=$(DEVICE) -c $< -o $@	
+	avr-gcc $(CFLAGS) -ffunction-sections -fdata-sections -Os -mmcu=$(DEVICE) -c $< -o $@	
 
 
 $(BUILDDIR):
