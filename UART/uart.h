@@ -1,7 +1,7 @@
 #ifndef UART
 #define UART
 
-#define BUFFER_LENGTH 50
+#define BUFFER_LENGTH 124
 
 #include <avr/io.h>
 
@@ -23,6 +23,9 @@ void UART_init(uint32_t baud, uint32_t f_cpu);
 
 // Transmit an array of characters
 void UART_transmit(char* data, uint8_t len);
+
+// Transmit a single character
+void UART_transmit_char(char data);
 
 // Read a character from the recieve buffer
 char UART_recieve(void);

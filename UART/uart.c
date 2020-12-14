@@ -60,6 +60,31 @@ void UART_transmit(char* data, uint8_t len) {
     }  
 }
 
+void UART_transmit_char(char data) {
+
+    // If the buffer is already full of data, wait for an empty space
+    while((TX_write_position == TX_send_position) && !(UCSR0A & (1 << UDRE0)));
+
+    // Write the data to the transmit buffer
+    *(TX_buffer + TX_write_position++) = data;
+
+    // If a the end of the buffer, reset position
+    if(TX_write_position == BUFFER_LENGTH) {
+        TX_write_position = 0;
+    }
+
+    // Check for ongoing transmission
+    if(UCSR0A & (1 << UDRE0)) {
+        // Place data in transmit regester to begin the transmission
+        UDR0 = *(TX_buffer + TX_send_position++);
+    }
+
+    // Check if send position must be reset
+    if(TX_send_position == BUFFER_LENGTH) {
+        TX_send_position = 0;
+    }
+}
+
 char UART_recieve(void) {
     
     char data = '\0';
