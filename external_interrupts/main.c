@@ -4,11 +4,18 @@
 #include <avr/interrupt.h>
 
 #define LED_PIN 1
+#define INT_PIN 0
 
 // Pin change interrupt
 ISR(PCINT0_vect) {
-	// Toggle the led pin
-	PORTB ^= (1 << LED_PIN);
+
+    // If interupt pin is high, turn the LED off
+	if(PINB & (1 << INT_PIN)) {
+        PORTB &= ~(1 << LED_PIN);
+    }
+
+    // Else turn the LED on
+    else PORTB |= (1 << LED_PIN);
 }
 
 int main() {
@@ -20,6 +27,8 @@ int main() {
 
     // Set port data dirrection
     DDRB  |= (1 << LED_PIN);
+
+    PORTB |= (1 << INT_PIN);
 
     while(1) {
         // Do nothing
