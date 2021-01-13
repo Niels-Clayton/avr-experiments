@@ -9,13 +9,10 @@
 // Pin change interrupt
 ISR(PCINT0_vect) {
 
-    // If interupt pin is high, turn the LED off
-	if(PINB & (1 << INT_PIN)) {
-        PORTB &= ~(1 << LED_PIN);
+    // If interupt pin is low toggel the LED
+	if(!(PINB & (1 << INT_PIN))) {
+        PORTB ^= (1 << LED_PIN);
     }
-
-    // Else turn the LED on
-    else PORTB |= (1 << LED_PIN);
 }
 
 int main() {
